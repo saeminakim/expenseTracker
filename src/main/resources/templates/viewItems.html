@@ -4,26 +4,55 @@
     <meta charset="UTF-8">
     <title>Expense Tracker</title>
 </head>
+<style>
+    th {
+        width: 150px;
+    }
+    tr {
+        height: 40px;
+    }
+</style>
+<script>
+    function validate() {
+        console.log(${selectedItem});
+    }
+</script>
 <body>
     <h3>
         <span th:text="${year}">Year</span>년
-        <span th:text="${month}">Month</span>월의 가계부</h3>
-    <table class="table">
+        <span th:text="${month}">Month</span>월의 가계부
+    </h3>
+    <form th:action="@{/updateItem}" th:object="${expenseItem}" method="post" >
+        <table class="table">
         <tbody>
-        <tr>
-            <th>항목</th>
-            <th>수입</th>
-            <th>지출</th>
-            <th>메모</th>
-            <th>태그</th>
-        </tr>
-        <tr th:each="item : ${items}">
-            <td th:text="${item.subject}">명목</td>
-            <td th:text="${item.income}">수입</td>
-            <td th:text="${item.expense}">지출</td>
-            <td th:text="${item.memo}">메모</td>
-            <td th:text="${item.tag}">태그</td>
-        </tr>
-    </table>
+            <tr>
+                <th style="width: 50px"></th>
+                <th>항목</th>
+                <th>수입</th>
+                <th>지출</th>
+                <th>메모</th>
+                <th>태그</th>
+            </tr>
+            <tr th:each="item : ${items}">
+                <td>
+                    <input type="checkbox" th:value="${item.id}" th:name="selectedItems" />
+                </td>
+                <td th:text="${item.subject}">명목</td>
+                <td th:text="${item.income}">수입</td>
+                <td th:text="${item.expense}">지출</td>
+                <td th:text="${item.memo}">메모</td>
+                <td th:text="${item.tag}">태그</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td th:text="${allIncomeTotal}">수입 합계</td>
+                <td th:text="${allExpenseTotal}">지출 합계</td>
+                <td>수입 + 지출</td>
+                <td th:text="${allIncomeAllExpense}">수입 + 지출</td>
+            </tr>
+            <button type="submit" name="action" value="update" onclick="validate">수정</button>
+            <button type="submit" name="action" value="delete">삭제</button>
+        </table>
+    </form>
 </body>
 </html>

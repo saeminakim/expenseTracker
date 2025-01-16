@@ -17,7 +17,19 @@ public class ExpenseService {
         expenseRepository.save(item);
     }
     
+    public void updateItems(ArrayList<Expense> selectedItems) {
+        expenseRepository.saveAll(selectedItems);
+    }
+    
     public ArrayList<Expense> getAllItems () {
         return expenseRepository.findAll();
+    }
+    
+    public int getAllIncomeTotal() {
+        return expenseRepository.getAllIncomeTotal();
+    }
+    
+    public int getAllExpenseTotal() {
+        return expenseRepository.getAllExpenseTotal();
     }
 }
