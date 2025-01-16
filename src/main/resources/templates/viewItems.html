@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Expense Tracker</title>
+</head>
+<body>
+    <h3>
+        <span th:text="${year}">Year</span>년
+        <span th:text="${month}">Month</span>월의 가계부</h3>
+    <table class="table">
+        <tbody>
+        <tr>
+            <th>항목</th>
+            <th>수입</th>
+            <th>지출</th>
+            <th>메모</th>
+            <th>태그</th>
+        </tr>
+        <tr th:each="item : ${items}">
+            <td th:text="${item.subject}">명목</td>
+            <td th:text="${item.income}">수입</td>
+            <td th:text="${item.expense}">지출</td>
+            <td th:text="${item.memo}">메모</td>
+            <td th:text="${item.tag}">태그</td>
+        </tr>
+    </table>
+</body>
+</html>
