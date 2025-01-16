@@ -6,28 +6,45 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class ExpenseController {
     
     @Autowired
     private ExpenseService expenseService;
+
+    @GetMapping(value = "/")
+    public String welcome(Model model) {
+        LocalDate now = LocalDate.now();
+        model.addAttribute("year", now.getYear());
+        model.addAttribute("month", now.getMonthValue());
+
+        ArrayList<Expense> itemsByMonth = expenseService.findByMonthAndYear(now.getYear(), now.getMonthValue());
+        if (ObjectUtils.isEmpty(itemsByMonth)) {
+            return "index";
+        }
+
+        model.addAttribute("items", itemsByMonth);
+
+        // TODO month별 조회했을 때 합계
+        return "viewItems";
+    }
     
     @GetMapping(value = "/viewItems")
-    public String viewItems(Model model) {
+    public String viewAllItems(Model model) {
         LocalDate now = LocalDate.now();
         model.addAttribute("year", now.getYear());
         model.addAttribute("month", now.getMonthValue());
         
         ArrayList<Expense> allItems = expenseService.getAllItems();
+        if (ObjectUtils.isEmpty(allItems)) {
+            return "index";
+        }
         model.addAttribute("items", allItems);
     
         int allIncomeTotal = expenseService.getAllIncomeTotal();
@@ -35,8 +52,7 @@ public class ExpenseController {
     
         int allExpenseTotal = expenseService.getAllExpenseTotal();
         model.addAttribute("allExpenseTotal", allExpenseTotal);
-        
-        model.addAttribute("allIncomeAllExpense", allExpenseTotal - allExpenseTotal);
+        model.addAttribute("allIncomeAllExpense", allIncomeTotal - allExpenseTotal);
         
         return "viewItems";
     }
@@ -53,11 +69,31 @@ public class ExpenseController {
         return "redirect:/viewItems";
     }
     
-    @PostMapping(value = "/updateItem")
-    public String updateItem(@RequestParam("selectedItems") ArrayList<Expense> selectedItems) {
+    @PostMapping(value = "/processItem")
+    public String processItem(@RequestParam(name = "selectedItems", required = false) ArrayList<Expense> selectedItems
+            , @RequestParam("action") String action, Model model) {
         if (!ObjectUtils.isEmpty(selectedItems)) {
-            expenseService.updateItems(selectedItems);
+            switch (action) {
+                case "update":
+                    Optional<Expense> item = expenseService.findById(selectedItems.get(0).getId());
+                    model.addAttribute("expenseItem", item);
+                    return "updateItem";
+                case "delete":
+                    expenseService.deleteItems(selectedItems);
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            model.addAttribute("expenseItem", new Expense());
+            return "addItem";
         }
+        return "redirect:/viewItems";
+    }
+
+    @PostMapping(value = "/updateItem")
+    public String updateItem(@ModelAttribute("expenseItem") Expense expenseItem) {
+        expenseService.saveItem(expenseItem);
         return "redirect:/viewItems";
     }
 }

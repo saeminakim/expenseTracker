@@ -5,7 +5,8 @@
     <title>Expense Tracker</title>
 </head>
 <body>
-    <form th:action="@{/addItem/new}" th:object="${expenseItem}" method="post" >
+    <form th:action="@{/updateItem}" th:object="${expenseItem}" method="post" >
+        <input type="hidden" name="id" th:field="*{id}" />
         <table class="table">
             <tbody>
             <tr>
@@ -25,7 +26,7 @@
                 <td><input type="text" id="tag" th:field="*{tag}" placeholder="태그를 입력하세요"></td>
             </tr>
             </tbody>
-            <button type="submit">등록</button>
+            <button type="submit">수정</button>
         </table>
     </form>
 </body>

@@ -13,8 +13,14 @@
     }
 </style>
 <script>
-    function validate() {
-        console.log(${selectedItem});
+    function validateUpdate(value) {
+        console.log(value);
+        const checkboxes = document.querySelectorAll('input[name="selectedItems"]:checked');
+        if (checkboxes.length !== 1 && value === "update") {
+            alert("한 번에 하나의 아이템만 수정할 수 있습니다.");
+            return false;
+        }
+        return true;
     }
 </script>
 <body>
@@ -22,11 +28,12 @@
         <span th:text="${year}">Year</span>년
         <span th:text="${month}">Month</span>월의 가계부
     </h3>
-    <form th:action="@{/updateItem}" th:object="${expenseItem}" method="post" >
+    <form th:action="@{/processItem}" th:object="${expenseItem}" method="post" onsubmit="return validateUpdate(this.querySelector('button[type=submit]:focus').value)">
         <table class="table">
         <tbody>
             <tr>
                 <th style="width: 50px"></th>
+                <th>날짜</th>
                 <th>항목</th>
                 <th>수입</th>
                 <th>지출</th>
@@ -37,6 +44,7 @@
                 <td>
                     <input type="checkbox" th:value="${item.id}" th:name="selectedItems" />
                 </td>
+                <td th:text="${item.date}">날짜</td>
                 <td th:text="${item.subject}">명목</td>
                 <td th:text="${item.income}">수입</td>
                 <td th:text="${item.expense}">지출</td>
@@ -45,12 +53,15 @@
             </tr>
             <tr>
                 <td></td>
+                <td></td>
+                <td></td>
                 <td th:text="${allIncomeTotal}">수입 합계</td>
                 <td th:text="${allExpenseTotal}">지출 합계</td>
                 <td>수입 + 지출</td>
                 <td th:text="${allIncomeAllExpense}">수입 + 지출</td>
             </tr>
-            <button type="submit" name="action" value="update" onclick="validate">수정</button>
+            <button type="submit" name="action" value="addItem">등록</button>
+            <button type="submit" name="action" value="update">수정</button>
             <button type="submit" name="action" value="delete">삭제</button>
         </table>
     </form>
